@@ -122,12 +122,12 @@ router.post('/bet', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    // if(!validQuery(req.path, req.query)){
-    //     err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-    //     return res.status(404).json(err); 
-    // }
+    if(!validQuery(req.path, req.body)){
+        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
+        return res.status(404).json(err); 
+    }
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    Session.findOne({sessionId: req.body.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -139,7 +139,7 @@ router.post('/bet', (req, res) => {
             }
         } else {
             console.log('session: ',session);
-            console.log('req.query: ',req.query);
+            console.log('req.body: ',req.body);
             console.log('req: ',req);
             err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
             return res.status(404).json(err);
@@ -149,7 +149,7 @@ router.post('/bet', (req, res) => {
     .then(player => {
         if(player) {
             globalPlayer = player;
-            return Transaction.findOne({providerTransactionId: req.query.id}).exec();
+            return Transaction.findOne({providerTransactionId: req.body.id}).exec();
         } else {
             err = apiErr('INTERNAL_ERROR', 'Player not found');
             return res.status(500).json(err);
@@ -165,13 +165,13 @@ router.post('/bet', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.query.amount),
+                amount: convertCredits.toInternal(req.body.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.query.gameId,
+                roundId: req.body.gameId,
                 type: 'bet',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.query.id
+                providerTransactionId: req.body.id
             }
 
             // Deduct money
@@ -208,12 +208,12 @@ router.post('/refund', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    // if(!validQuery(req.path, req.query)){
-    //     err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-    //     return res.status(404).json(err); 
-    // }
+    if(!validbody(req.path, req.body)){
+        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
+        return res.status(404).json(err); 
+    }
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    Session.findOne({sessionId: req.body.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -233,7 +233,7 @@ router.post('/refund', (req, res) => {
         if(player) {
             globalPlayer = player;
             return Transaction.findOne({
-                providerTransactionId: req.query.id,
+                providerTransactionId: req.body.id,
                 // WRONG - 'status': 'success'
             }).exec();
         } else {
@@ -251,14 +251,14 @@ router.post('/refund', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.query.amount),
+                amount: convertCredits.toInternal(req.body.amount),
                 transactionId: randomstring.generate(32),
-                providerBetTransactionId: req.query.bettransactionid,
-                roundId: req.query.gameId,
+                providerBetTransactionId: req.body.bettransactionid,
+                roundId: req.body.gameId,
                 type: 'refund',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.query.id
+                providerTransactionId: req.body.id
             }
 
             // Deduct money
@@ -292,12 +292,12 @@ router.post('/win', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    // if(!validQuery(req.path, req.query)){
-    //     err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-    //     return res.status(404).json(err); 
-    // }
+    if(!validbody(req.path, req.body)){
+        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
+        return res.status(404).json(err); 
+    }
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    Session.findOne({sessionId: req.body.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -318,7 +318,7 @@ router.post('/win', (req, res) => {
             globalPlayer = player;
             console.log('Actual balance in DB: ', globalPlayer);
             return Transaction.findOne({
-                providerTransactionId: req.query.id,
+                providerTransactionId: req.body.id,
                 // TRANSACTION IS NOT FAILED - 'status': 'success'
             }).exec();
         } else {
@@ -336,13 +336,13 @@ router.post('/win', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.query.amount),
+                amount: convertCredits.toInternal(req.body.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.query.gameId,
+                roundId: req.body.gameId,
                 type: 'win',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.query.id
+                providerTransactionId: req.body.id
             }
 
             // Deduct money
