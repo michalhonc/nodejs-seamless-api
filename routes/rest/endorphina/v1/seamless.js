@@ -140,6 +140,7 @@ router.post('/bet', (req, res) => {
         } else {
             console.log('session: ',session);
             console.log('req.query: ',req.query);
+            console.log('req: ',req);
             err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
             return res.status(404).json(err);
         }
