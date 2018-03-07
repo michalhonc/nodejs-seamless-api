@@ -165,7 +165,7 @@ router.post('/bet', (req, res) => {
             const params = {
                 amount: convertCredits.toInternal(req.query.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.query.gameid,
+                roundId: req.query.gameId,
                 type: 'bet',
                 status: 'success',
                 sessionId: globalSession.sessionId,
@@ -252,7 +252,7 @@ router.post('/refund', (req, res) => {
                 amount: convertCredits.toInternal(req.query.amount),
                 transactionId: randomstring.generate(32),
                 providerBetTransactionId: req.query.bettransactionid,
-                roundId: req.query.gameid,
+                roundId: req.query.gameId,
                 type: 'refund',
                 status: 'success',
                 sessionId: globalSession.sessionId,
@@ -336,7 +336,7 @@ router.post('/win', (req, res) => {
             const params = {
                 amount: convertCredits.toInternal(req.query.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.query.gameid,
+                roundId: req.query.gameId,
                 type: 'win',
                 status: 'success',
                 sessionId: globalSession.sessionId,

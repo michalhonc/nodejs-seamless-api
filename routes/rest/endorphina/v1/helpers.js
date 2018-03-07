@@ -34,15 +34,15 @@ module.exports = {
                 break;
 
             case '/bet':
-                gQuery = query.token && query.amount && query.gameid && query.id && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.sign===sign;
                 break;
 
             case '/refund':
-                gQuery = query.token && query.amount && query.gameid && query.id && query.bettransactionid && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.betTransactionId && query.sign===sign;
                 break;
             
             case '/win':
-                gQuery = query.token && query.amount && query.gameid && query.id && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.sign===sign;
                 break;
             
             default:
