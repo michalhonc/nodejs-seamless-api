@@ -138,7 +138,8 @@ router.post('/bet', (req, res) => {
                 return Player.findOne({playerId: session.playerId}).exec();
             }
         } else {
-            console.log('session not found');
+            console.log('session: ',session);
+            console.log('req.query: ',req.query);
             err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
             return res.status(404).json(err);
         }
