@@ -1,0 +1,20 @@
+{
+  "name": "endorphina",
+  "version": "0.0.1",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.3",
+    "nodemon": "^1.14.12",
+    "randomstring": "^1.1.5",
+    "sha1": "^1.1.1",
+    "uuid": "^3.2.1"
+  },
+  "description": "Seamless API",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michal Honc",
+  "license": "ISC"
+}
