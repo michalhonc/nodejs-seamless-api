@@ -34,15 +34,15 @@ module.exports = {
                 break;
 
             case '/bet':
-                gQuery = query.token && query.amount && query.gameId && query.id && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.date && query.sign===sign;
                 break;
 
             case '/refund':
-                gQuery = query.token && query.amount && query.gameId && query.id && query.betTransactionId && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.date && query.betTransactionId && query.sign===sign;
                 break;
             
             case '/win':
-                gQuery = query.token && query.amount && query.gameId && query.id && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.date  && query.sign===sign;
                 break;
             
             default:
@@ -52,7 +52,7 @@ module.exports = {
         if(gQuery){
             return true;
         } else {
-            console.log('Correct sign: ', sign);
+            console.log(query);
             return false;
         }
     },
