@@ -122,10 +122,10 @@ router.post('/bet', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    if(!validQuery(req.path, req.query)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    // if(!validQuery(req.path, req.query)){
+    //     err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
+    //     return res.status(404).json(err); 
+    // }
 
     Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
@@ -206,10 +206,10 @@ router.post('/refund', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    if(!validQuery(req.path, req.query)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    // if(!validQuery(req.path, req.query)){
+    //     err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
+    //     return res.status(404).json(err); 
+    // }
 
     Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
@@ -290,10 +290,10 @@ router.post('/win', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    if(!validQuery(req.path, req.query)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    // if(!validQuery(req.path, req.query)){
+    //     err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
+    //     return res.status(404).json(err); 
+    // }
 
     Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
