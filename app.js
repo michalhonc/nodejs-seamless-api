@@ -27,8 +27,8 @@ mongoose.connect(keys.mongoURI)
 app.use(morgan("combined", { "stream": logger.stream }));
 
 // bodyParser
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json());
 
 // Use routes
 app.use('/', index)

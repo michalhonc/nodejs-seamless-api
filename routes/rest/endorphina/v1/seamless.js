@@ -14,10 +14,12 @@ const Transaction = require('../../../../models/Transaction');
 
 router.get('/session', (req, res) => {
     let globalSession;
+    const reqParams = req.query;
+    console.log(reqParams);
 
-    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
+    if(!validQuery(req.path, reqParams)) return apiErr(res, 'ACCESS_DENIED');
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    Session.findOne({sessionId: reqParams.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -45,10 +47,11 @@ router.get('/session', (req, res) => {
 
 router.get('/balance', (req, res) => {
     let globalSession;
+    const reqParams = req.query;
 
-    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
+    if(!validQuery(req.path, reqParams)) return apiErr(res, 'ACCESS_DENIED');
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    Session.findOne({sessionId: reqParams.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -72,10 +75,15 @@ router.post('/bet', (req, res) => {
     let globalSession;
     let globalPlayer;
     let globalTransaction;
+    const reqParams = req.body;
 
-    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
+    console.log('query', req.query)
+    console.log('body', req.body)
+    console.log('params', req.params)
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    if(!validQuery(req.path, reqParams)) return apiErr(res, 'ACCESS_DENIED');
+
+    Session.findOne({sessionId: reqParams.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -88,7 +96,7 @@ router.post('/bet', (req, res) => {
     .then(player => {
         if(player) {
             globalPlayer = player;
-            return Transaction.findOne({providerTransactionId: req.query.id}).exec();
+            return Transaction.findOne({providerTransactionId: reqParams.id}).exec();
         
         } else return apiErr(res, 'INTERNAL_ERROR');
     })
@@ -101,13 +109,13 @@ router.post('/bet', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.query.amount),
+                amount: convertCredits.toInternal(reqParams.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.query.gameId,
+                roundId: reqParams.gameId,
                 type: 'bet',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.query.id
+                providerTransactionId: reqParams.id
             }
 
             // Deduct money
@@ -134,10 +142,11 @@ router.post('/refund', (req, res) => {
     let globalSession;
     let globalPlayer;
     let globalTransaction;
+    const reqParams = req.query;
 
-    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
+    if(!validQuery(req.path, reqParams)) return apiErr(res, 'ACCESS_DENIED');
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    Session.findOne({sessionId: reqParams.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -150,7 +159,7 @@ router.post('/refund', (req, res) => {
         if(player) {
             globalPlayer = player;
             return Transaction.findOne({
-                providerTransactionId: req.query.id,
+                providerTransactionId: reqParams.id,
                 // WRONG - 'status': 'success'
             }).exec();
         } else return apiErr(res, 'INTERNAL_ERROR');
@@ -165,14 +174,14 @@ router.post('/refund', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.query.amount),
+                amount: convertCredits.toInternal(reqParams.amount),
                 transactionId: randomstring.generate(32),
-                providerBetTransactionId: req.query.bettransactionid,
-                roundId: req.query.gameId,
+                providerBetTransactionId: reqParams.bettransactionid,
+                roundId: reqParams.gameId,
                 type: 'refund',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.query.id
+                providerTransactionId: reqParams.id
             }
 
             // Deduct money
@@ -199,10 +208,11 @@ router.post('/win', (req, res) => {
     let globalSession;
     let globalPlayer;
     let globalTransaction;
+    const reqParams = req.query;
 
-    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
+    if(!validQuery(req.path, reqParams)) return apiErr(res, 'ACCESS_DENIED');
 
-    Session.findOne({sessionId: req.query.token}).exec()
+    Session.findOne({sessionId: reqParams.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -215,7 +225,7 @@ router.post('/win', (req, res) => {
         if(player) {
             globalPlayer = player;
             return Transaction.findOne({
-                providerTransactionId: req.query.id,
+                providerTransactionId: reqParams.id,
                 // TRANSACTION IS NOT FAILED - 'status': 'success'
             }).exec();
         } else return apiErr(res, 'INTERNAL_ERROR');
@@ -230,13 +240,13 @@ router.post('/win', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.query.amount),
+                amount: convertCredits.toInternal(reqParams.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.query.gameId,
+                roundId: reqParams.gameId,
                 type: 'win',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.query.id
+                providerTransactionId: reqParams.id
             }
 
             // Deduct money

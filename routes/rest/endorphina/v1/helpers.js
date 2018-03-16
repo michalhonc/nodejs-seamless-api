@@ -24,6 +24,7 @@ module.exports = {
     validQuery: (method, query) => {
         const sign = module.exports.getSign(query);
         let gQuery;
+        console.log('qQuery', query);
         switch (method) {
             case '/session':
                 gQuery = query.token && query.sign===sign;
@@ -38,21 +39,21 @@ module.exports = {
                 break;
 
             case '/refund':
-                gquery = query.token && query.amount && query.gameId && query.id && query.date && query.betTransactionId && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.date && query.betTransactionId && query.sign===sign;
                 break;
             
             case '/win':
-                gquery = query.token && query.amount && query.gameId && query.id && query.date  && query.sign===sign;
+                gQuery = query.token && query.amount && query.gameId && query.id && query.date  && query.sign===sign;
                 break;
             
             default:
                 gQuery = query.sign===sign;
                 break;
         }
-        if(query.sign===sign){
+        if(gQuery){
             return true;
         } else {
-            console.log(query);
+            console.log('sign',sign);
             return false;
         }
     },
