@@ -15,6 +15,7 @@ const mongodbHandle = {
                 new Transaction(params)
                     .save()
                     .then(transaction => {
+                        console.log('WIN SAVED!!!');
                         return true;
                     })
                     .catch(err => {

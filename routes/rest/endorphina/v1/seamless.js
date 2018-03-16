@@ -226,7 +226,6 @@ router.post('/win', (req, res) => {
             globalPlayer = player;
             return Transaction.findOne({
                 providerTransactionId: reqParams.id,
-                // TRANSACTION IS NOT FAILED - 'status': 'success'
             }).exec();
         } else return apiErr(res, 'INTERNAL_ERROR');
     })
@@ -234,6 +233,7 @@ router.post('/win', (req, res) => {
     .then(transaction => {
         globalTransaction = transaction; 
         if(transaction){
+            console.log('WIN Transaction was found an response is success');
             return res.status(200).json({
                 transactionId: transaction.transactionId,
                 balance: convertCredits.toEndorphina(getBalance(globalPlayer, globalSession.currency))
@@ -257,6 +257,7 @@ router.post('/win', (req, res) => {
             // Update players balance
             mongodbHandle.update('balance', { globalSession, balance });
             // Response
+            console.log('WIN transaction was NOT found and response is touched balance');
             return res.status(200).json({
                 transactionId: params.transactionId,
                 balance: convertCredits.toEndorphina(balance)
