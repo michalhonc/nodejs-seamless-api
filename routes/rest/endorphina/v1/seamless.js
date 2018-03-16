@@ -73,9 +73,9 @@ router.post('/bet', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    if(!validQuery(req.path, req.body)) return apiErr(res, 'ACCESS_DENIED');
+    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
 
-    Session.findOne({sessionId: req.body.token}).exec()
+    Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -88,7 +88,7 @@ router.post('/bet', (req, res) => {
     .then(player => {
         if(player) {
             globalPlayer = player;
-            return Transaction.findOne({providerTransactionId: req.body.id}).exec();
+            return Transaction.findOne({providerTransactionId: req.query.id}).exec();
         
         } else return apiErr(res, 'INTERNAL_ERROR');
     })
@@ -101,13 +101,13 @@ router.post('/bet', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.body.amount),
+                amount: convertCredits.toInternal(req.query.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.body.gameId,
+                roundId: req.query.gameId,
                 type: 'bet',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.body.id
+                providerTransactionId: req.query.id
             }
 
             // Deduct money
@@ -135,9 +135,9 @@ router.post('/refund', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    if(!validbody(req.path, req.body)) return apiErr(res, 'ACCESS_DENIED');
+    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
 
-    Session.findOne({sessionId: req.body.token}).exec()
+    Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -150,7 +150,7 @@ router.post('/refund', (req, res) => {
         if(player) {
             globalPlayer = player;
             return Transaction.findOne({
-                providerTransactionId: req.body.id,
+                providerTransactionId: req.query.id,
                 // WRONG - 'status': 'success'
             }).exec();
         } else return apiErr(res, 'INTERNAL_ERROR');
@@ -165,14 +165,14 @@ router.post('/refund', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.body.amount),
+                amount: convertCredits.toInternal(req.query.amount),
                 transactionId: randomstring.generate(32),
-                providerBetTransactionId: req.body.bettransactionid,
-                roundId: req.body.gameId,
+                providerBetTransactionId: req.query.bettransactionid,
+                roundId: req.query.gameId,
                 type: 'refund',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.body.id
+                providerTransactionId: req.query.id
             }
 
             // Deduct money
@@ -200,9 +200,9 @@ router.post('/win', (req, res) => {
     let globalPlayer;
     let globalTransaction;
 
-    if(!validbody(req.path, req.body)) return apiErr(res, 'ACCESS_DENIED');
+    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
 
-    Session.findOne({sessionId: req.body.token}).exec()
+    Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
@@ -215,7 +215,7 @@ router.post('/win', (req, res) => {
         if(player) {
             globalPlayer = player;
             return Transaction.findOne({
-                providerTransactionId: req.body.id,
+                providerTransactionId: req.query.id,
                 // TRANSACTION IS NOT FAILED - 'status': 'success'
             }).exec();
         } else return apiErr(res, 'INTERNAL_ERROR');
@@ -230,13 +230,13 @@ router.post('/win', (req, res) => {
             });
         } else {
             const params = {
-                amount: convertCredits.toInternal(req.body.amount),
+                amount: convertCredits.toInternal(req.query.amount),
                 transactionId: randomstring.generate(32),
-                roundId: req.body.gameId,
+                roundId: req.query.gameId,
                 type: 'win',
                 status: 'success',
                 sessionId: globalSession.sessionId,
-                providerTransactionId: req.body.id
+                providerTransactionId: req.query.id
             }
 
             // Deduct money
