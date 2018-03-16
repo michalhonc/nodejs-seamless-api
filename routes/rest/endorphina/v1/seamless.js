@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const randomstring = require('randomstring');
-const { apiErr } = require('./errorCodes');
+const { apiErr } = require('./apiErrHandler');
 const { validQuery, convertCredits, getBalance } = require('./helpers');
 const mongodbHandle = require('./dbHandler');
 const express = require('express');
@@ -13,152 +13,88 @@ const Player = require('../../../../models/Player');
 const Transaction = require('../../../../models/Transaction');
 
 router.get('/session', (req, res) => {
-    let err;
     let globalSession;
 
-    if(!validQuery(req.path, req.query)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
 
     Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
-            console.log('session found');
-            if(session.active === false){
-                console.log('session inactive');
-                err = apiErr('TOKEN_EXPIRED', 'The session token expired');
-                return res.status(403).json(err);
-            } else {
-                console.log('session active: ', session);
-                return Player.findOne({playerId: session.playerId}).exec();
-            }
-        } else {
-            console.log('session not found');
-            err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
-            return res.status(404).json(err);
-        }
+            if(session.active === false) return apiErr(res, 'TOKEN_EXPIRED');
+            else return Player.findOne({playerId: session.playerId}).exec();
+        
+        } else return apiErr(res, 'TOKEN_NOT_FOUND');
     })
 
     .then(player => {
         if(player) {
-            console.log('player found: ', player);
             const liveBalance = player.wallet.find( wallet => wallet.currency === globalSession.currency).balance;
             return res.status(200).json({
                 player: globalSession.playerId,
                 currency: globalSession.currency,
                 game: globalSession.gameId
             })
-        } else {
-            console.log('player not found');
-            err = apiErr('INTERNAL_ERROR', 'Player not found');
-            return res.status(500).json(err);
+        } else {   
+            return apiErr(res, 'INTERNAL_ERROR');
         }
     })
 
-    .catch(err => {        
-        // Unhandled error
-        console.log('catch found: ', err);
-        err = apiErr('INTERNAL_ERROR', 'Internal server error');
-        return res.status(500).json(err);
-    });
+    .catch(err => {return apiErr(res, 'INTERNAL_ERROR');});
 });
 
 router.get('/balance', (req, res) => {
-    let err;
     let globalSession;
 
-    if(!validQuery(req.path, req.query)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    if(!validQuery(req.path, req.query)) return apiErr(res, 'ACCESS_DENIED');
 
     Session.findOne({sessionId: req.query.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
-            console.log('session found');
-            if(session.active === false){
-                console.log('session inactive');
-                err = apiErr('TOKEN_EXPIRED', 'The session token expired');
-                return res.status(403).json(err);
-            } else {
-                console.log('session active: ', session);
-                return Player.findOne({playerId: session.playerId}).exec();
-            }
-        } else {
-            console.log('session not found');
-            err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
-            return res.status(404).json(err);
-        }
+            return Player.findOne({playerId: session.playerId}).exec();
+        } else return apiErr(res, 'TOKEN_NOT_FOUND');
     })
 
     .then(player => {
         if(player) {
-            console.log('player found: ', player);
             const liveBalance = player.wallet.find( wallet => wallet.currency === globalSession.currency).balance;
             return res.status(200).json({
                 balance: convertCredits.toEndorphina(liveBalance)
             })
-        } else {
-            console.log('player not found');
-            err = apiErr('INTERNAL_ERROR', 'Player not found');
-            return res.status(500).json(err);
-        }
+        } else return apiErr(res, 'INTERNAL_ERROR');
     })
 
-    .catch(err => {        
-        // Unhandled error
-        console.log('catch found: ', err);
-        err = apiErr('INTERNAL_ERROR', 'Internal server error');
-        return res.status(500).json(err);
-    });
+    .catch(err => {return apiErr(res, 'INTERNAL_ERROR');});
 });
 
 router.post('/bet', (req, res) => {
-    let err;
     let globalSession;
     let globalPlayer;
     let globalTransaction;
 
-    if(!validQuery(req.path, req.body)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    if(!validQuery(req.path, req.body)) return apiErr(res, 'ACCESS_DENIED');
 
     Session.findOne({sessionId: req.body.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
-            if(session.active === false){
-                err = apiErr('TOKEN_EXPIRED', 'The session token expired');
-                return res.status(403).json(err);
-            } else {
-                return Player.findOne({playerId: session.playerId}).exec();
-            }
-        } else {
-            console.log('session: ',session);
-            console.log('req.body: ',req.body);
-            console.log('req: ',req);
-            err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
-            return res.status(404).json(err);
-        }
+            if(session.active === false) return apiErr(res, 'TOKEN_EXPIRED');
+            else return Player.findOne({playerId: session.playerId}).exec();
+        
+        } else return apiErr(res, 'TOKEN_NOT_FOUND');
     })
 
     .then(player => {
         if(player) {
             globalPlayer = player;
             return Transaction.findOne({providerTransactionId: req.body.id}).exec();
-        } else {
-            err = apiErr('INTERNAL_ERROR', 'Player not found');
-            return res.status(500).json(err);
-        }
+        
+        } else return apiErr(res, 'INTERNAL_ERROR');
     })
 
     .then(transaction => {        
         if(transaction){
-            console.log('transaction already exists');
             return res.status(200).json({
                 transactionId: transaction.transactionId,
                 balance: convertCredits.toEndorphina(getBalance(globalPlayer, globalSession.currency))
@@ -176,12 +112,9 @@ router.post('/bet', (req, res) => {
 
             // Deduct money
             let balance = getBalance(globalPlayer, globalSession.currency);
-            if(balance < params.amount){
-                err = apiErr('INSUFFICIENT_FUNDS', 'Player has insufficient funds');
-                return res.status(402).json(err);
-            } else {
-                balance -= params.amount;
-            }
+            if(balance < params.amount) return apiErr(res, 'INSUFFICIENT_FUNDS');
+            else balance -= params.amount;
+            
             // Save transaction
             mongodbHandle.save('transactions', params);
             // Update players balance
@@ -194,39 +127,23 @@ router.post('/bet', (req, res) => {
         }
     })
 
-    .catch(err => {        
-        // Unhandled error
-        console.log('catch found: ', err);
-        err = apiErr('INTERNAL_ERROR', 'Internal server error');
-        return res.status(500).json(err);
-    });
+    .catch(err => {return apiErr(res, 'INTERNAL_ERROR')});
 });
 
 router.post('/refund', (req, res) => {
-    let err;
     let globalSession;
     let globalPlayer;
     let globalTransaction;
 
-    if(!validbody(req.path, req.body)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    if(!validbody(req.path, req.body)) return apiErr(res, 'ACCESS_DENIED');
 
     Session.findOne({sessionId: req.body.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
-            if(session.active === false){
-                err = apiErr('TOKEN_EXPIRED', 'The session token expired');
-                return res.status(403).json(err);
-            } else {
-                return Player.findOne({playerId: session.playerId}).exec();
-            }
-        } else {
-            err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
-            return res.status(404).json(err);
-        }
+            return Player.findOne({playerId: session.playerId}).exec();
+       
+        } else return apiErr(res, 'TOKEN_NOT_FOUND');
     })
 
     .then(player => {
@@ -236,10 +153,7 @@ router.post('/refund', (req, res) => {
                 providerTransactionId: req.body.id,
                 // WRONG - 'status': 'success'
             }).exec();
-        } else {
-            err = apiErr('INTERNAL_ERROR', 'Player not found');
-            return res.status(500).json(err);
-        }
+        } else return apiErr(res, 'INTERNAL_ERROR');
     })
 
     .then(transaction => {
@@ -278,53 +192,33 @@ router.post('/refund', (req, res) => {
         }
         })
 
-    .catch(err => {        
-        // Unhandled error
-        console.log('catch found: ', err);
-        err = apiErr('INTERNAL_ERROR', 'Internal server error');
-        return res.status(500).json(err);
-    });
+    .catch(err => {return apiErr(res, 'INTERNAL_ERROR');});
 });
 
 router.post('/win', (req, res) => {
-    let err;
     let globalSession;
     let globalPlayer;
     let globalTransaction;
 
-    if(!validbody(req.path, req.body)){
-        err = apiErr('ACCESS_DENIED', 'The authentication credentials for the API are incorrect');
-        return res.status(404).json(err); 
-    }
+    if(!validbody(req.path, req.body)) return apiErr(res, 'ACCESS_DENIED');
 
     Session.findOne({sessionId: req.body.token}).exec()
     .then(session => {
         if(session){
             globalSession = session;
-            if(session.active === false){
-                err = apiErr('TOKEN_EXPIRED', 'The session token expired');
-                return res.status(403).json(err);
-            } else {
-                return Player.findOne({playerId: session.playerId}).exec();
-            }
-        } else {
-            err = apiErr('TOKEN_NOT_FOUND', 'The session token is invalid');
-            return res.status(404).json(err);
-        }
+            return Player.findOne({playerId: session.playerId}).exec();
+
+        } else return apiErr(res, 'TOKEN_NOT_FOUND');
     })
 
     .then(player => {
         if(player) {
             globalPlayer = player;
-            console.log('Actual balance in DB: ', globalPlayer);
             return Transaction.findOne({
                 providerTransactionId: req.body.id,
                 // TRANSACTION IS NOT FAILED - 'status': 'success'
             }).exec();
-        } else {
-            err = apiErr('INTERNAL_ERROR', 'Player not found');
-            return res.status(500).json(err);
-        }
+        } else return apiErr(res, 'INTERNAL_ERROR');
     })
 
     .then(transaction => {
@@ -360,12 +254,7 @@ router.post('/win', (req, res) => {
         }
         })
 
-    .catch(err => {        
-        // Unhandled error
-        console.log('catch found: ', err);
-        err = apiErr('INTERNAL_ERROR', 'Internal server error');
-        return res.status(500).json(err);
-    });
+    .catch(err => {return apiErr(res, 'INTERNAL_ERROR');});
 });
 
 

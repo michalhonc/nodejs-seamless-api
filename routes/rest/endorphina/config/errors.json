@@ -1,0 +1,40 @@
+[{
+    "id": "0",
+    "response": {
+        "code": "ACCESS_DENIED",
+        "message": "The authentication credentials for the API are incorrect"
+    },
+    "http_code": "401"
+},
+{
+    "id": "1",
+    "response": {
+        "code": "INSUFFICIENT_FUNDS",
+        "message": "Player has insufficient funds"
+    },
+    "http_code": "402"
+},
+{
+    "id": "2",
+    "response": {
+        "code": "TOKEN_EXPIRED",
+        "message": "The session token expired"
+    },
+    "http_code": "403"
+},
+{
+    "id": "3",
+    "response": {
+        "code": "TOKEN_NOT_FOUND",
+        "message": "The session token is invalid"
+    },
+    "http_code": "404"
+},
+{
+    "id": "4",
+    "response": {
+        "code": "INTERNAL_ERROR",
+        "message": "Internal server error"
+    },
+    "http_code": "500"
+}]

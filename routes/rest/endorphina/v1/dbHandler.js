@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
+const express = require('express');
 
 // Load Model
 const Session = require('../../../../models/Session');
 const Player = require('../../../../models/Player');
 const Transaction = require('../../../../models/Transaction');
+const Game = require('../../../../models/Game');
 
 const mongodbHandle = {
     save: function(collection, params) {
+        
         switch (collection) {
             case 'transactions':
                 new Transaction(params)
@@ -31,6 +34,19 @@ const mongodbHandle = {
                         return err;
                     });
                 break;
+            case 'games':
+                return new Promise((resolve, reject) => {
+                    new Game(params).save()
+                        .then(game => {
+                            console.log('saved');
+                            return true;
+                        })
+                        .catch(err => {
+                            console.log('games err');
+                            return err;
+                    });
+                })
+                break;
             default:
                 break;
         }
@@ -51,6 +67,8 @@ const mongodbHandle = {
                 })
                 return;
                 break;
+
+           
             
             case 'betRefunded':
                 console.log('betrefunded: ', params);
@@ -74,7 +92,36 @@ const mongodbHandle = {
         
     },
     findOne: function(collection, params) {
+        switch (collection) {
+            case 'games':      
+            return new Promise((resolve, reject) => {     
+                Game.findOne({gameId: params.gameId})
+                    .then(game => {
+                        if (game) return true;
+                        else return false;
+                    })
+                    .catch(err => {
+                        throw new err
+                    });
+                });
+                break;
         
+            default:
+                break;
+        }
+    },
+    find: function(collection, res) {
+        switch (collection) {
+            case 'games':
+                Game.find({})
+                    .then(games => {
+                        return 'funguje'
+                    })
+                break;
+        
+            default:
+                break;
+        }
     }
 }
 

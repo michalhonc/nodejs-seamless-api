@@ -2,13 +2,17 @@
   "name": "endorphina",
   "version": "0.0.1",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "md5": "^2.2.1",
     "mongoose": "^5.0.3",
+    "morgan": "^1.9.0",
     "nodemon": "^1.14.12",
     "randomstring": "^1.1.5",
     "sha1": "^1.1.1",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "winston": "^2.4.1"
   },
   "description": "Seamless API",
   "main": "app.js",

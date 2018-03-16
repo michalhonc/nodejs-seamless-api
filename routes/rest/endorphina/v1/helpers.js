@@ -2,7 +2,7 @@ const sha1 = require('sha1');
 const uuid = require('uuid');
 
 // Load keys
-const keys = require('../../../../config/keys');
+const keys = require('../config/keys');
 
 module.exports = {
     generateUUID: () => {
@@ -24,31 +24,31 @@ module.exports = {
     validQuery: (method, query) => {
         const sign = module.exports.getSign(query);
         let gQuery;
-        // switch (method) {
-        //     case '/session':
-        //         gQuery = query.token && query.sign===sign;
-        //         break;
+        switch (method) {
+            case '/session':
+                gQuery = query.token && query.sign===sign;
+                break;
 
-        //     case '/balance':
-        //         gQuery = query.token && query.sign===sign;
-        //         break;
+            case '/balance':
+                gQuery = query.token && query.sign===sign;
+                break;
 
-        //     case '/bet':
-        //         gQuery = query.token && query.amount && query.gameId && query.id && query.date && query.sign===sign;
-        //         break;
+            case '/bet':
+                gQuery = body.token && body.amount && body.gameId && body.id && body.date && body.sign===sign;
+                break;
 
-        //     case '/refund':
-        //         gQuery = query.token && query.amount && query.gameId && query.id && query.date && query.betTransactionId && query.sign===sign;
-        //         break;
+            case '/refund':
+                gbody = body.token && body.amount && body.gameId && body.id && body.date && body.betTransactionId && body.sign===sign;
+                break;
             
-        //     case '/win':
-        //         gQuery = query.token && query.amount && query.gameId && query.id && query.date  && query.sign===sign;
-        //         break;
+            case '/win':
+                gbody = body.token && body.amount && body.gameId && body.id && body.date  && body.sign===sign;
+                break;
             
-        //     default:
-        //         gQuery = query.sign===sign;
-        //         break;
-        // }
+            default:
+                gQuery = query.sign===sign;
+                break;
+        }
         if(query.sign===sign){
             return true;
         } else {
@@ -71,5 +71,5 @@ module.exports = {
         queryValues += salt;
         const sign = sha1(queryValues);
         return sign;
-    },
+    }
 }
