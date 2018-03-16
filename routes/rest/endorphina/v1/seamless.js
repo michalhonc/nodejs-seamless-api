@@ -142,7 +142,7 @@ router.post('/refund', (req, res) => {
     let globalSession;
     let globalPlayer;
     let globalTransaction;
-    const reqParams = req.query;
+    const reqParams = req.body;
 
     if(!validQuery(req.path, reqParams)) return apiErr(res, 'ACCESS_DENIED');
 
@@ -208,8 +208,8 @@ router.post('/win', (req, res) => {
     let globalSession;
     let globalPlayer;
     let globalTransaction;
-    const reqParams = req.query;
-
+    const reqParams = req.body;
+    
     if(!validQuery(req.path, reqParams)) return apiErr(res, 'ACCESS_DENIED');
 
     Session.findOne({sessionId: reqParams.token}).exec()
