@@ -17,8 +17,7 @@ module.exports = {
         }
 
         getSessionAndPlayer(res, params)
-            .then(array => {
-                let result = array[0];
+            .then(result => {
                 result = {
                     player: result.session.playerId,
                     currency: result.session.currency,
@@ -26,7 +25,10 @@ module.exports = {
                 }
                 return res.status(200).json(result);
             })
-            .catch(err => {return apiErr(res, 'INTERNAL_ERROR')});
+            .catch(err => {
+                console.log(err);
+                return apiErr(res, 'INTERNAL_ERROR')
+            });
     },
     balance: (req, res) => {
         const params = req.query;
@@ -36,8 +38,7 @@ module.exports = {
         }
 
         getSessionAndPlayer(res, params)
-            .then(array => {
-                let result = array[0];
+            .then(result => {
                 const balance = getBalance(result.player, result.session.currency)
                 
                 result = {
@@ -45,7 +46,10 @@ module.exports = {
                 }
                 return res.status(200).json(result);
             })
-            .catch(err => {return apiErr(res, 'INTERNAL_ERROR')});
+            .catch(err => {
+                console.log(err);
+                return apiErr(res, 'INTERNAL_ERROR')
+            });
     },
     bet: (req, res) => {
         const params = req.body;
@@ -94,7 +98,11 @@ module.exports = {
                     return res.status(200).json(result);
                 }
             })
-            .catch(err => {return apiErr(res, 'INTERNAL_ERROR')});
+            .catch(err => {
+                
+                console.log(err);
+                return apiErr(res, 'INTERNAL_ERROR')
+            });
     },
     refund: (req, res) => {
         const params = req.body;
@@ -145,7 +153,11 @@ module.exports = {
                     return res.status(200).json(result);
                 }
             })
-            .catch(err => {return apiErr(res, 'INTERNAL_ERROR')});
+            .catch(err => {
+                
+                console.log(err);
+                return apiErr(res, 'INTERNAL_ERROR')
+            });
     },
     win: (req, res) => {
         const params = req.body;
