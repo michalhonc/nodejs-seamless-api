@@ -8,7 +8,7 @@ let launchURL;
 
 router.get('/real', (req, res) => {
     logger.debug(req.query);
-    try {gameLaunch = require(`../../rest/${req.query.provider}/v1/gameLaunch`)} 
+    try {gameLaunch = require('../v1/gameLaunch')} 
     catch (error) {
         return res.send('Provider not found!')
     };
@@ -27,30 +27,7 @@ router.get('/real', (req, res) => {
 });
 
 router.get('/demo', (req, res) => {
-    try {gameLaunch = require(`../../rest/${req.query.provider}/v1/gameLaunch`)} 
-    catch (error) {return res.send('Provider not found!')};
-
-    const params = {
-        game: req.query.game,
-        exit: req.query.exit,
-    }
-
-    switch (req.query.provider) {
-        case 'endorphina':
-            gameLaunch.demo(params)
-                .then(url => {
-                    return res.send(url);
-                })
-                .catch(err => console.log('err', err));
-            break;
-        
-        case 'other-provider':
-            break;
     
-        default:
-            return res.send('Provider not found!');
-            break;
-    }
 });
 
 module.exports = router;
