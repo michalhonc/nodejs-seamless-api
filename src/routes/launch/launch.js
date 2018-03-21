@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const logger = require('../../../logs/logger');
+const logger = require('../../logs/logger');
 
 // Expecting /rest/launch/real-demo?provider=endorphina&currency=&game=
-// SAFETY for player
 let gameLaunch;
 let launchURL;
 

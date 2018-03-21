@@ -1,4 +1,4 @@
-const mongodbHandle = require('./dbHandler');
+const db = require('./dbHandler');
 const keys = require('../config/keys');
 const { generateUUID, getSign } = require('./helpers');
 const axios = require('axios');
@@ -32,7 +32,7 @@ module.exports = {
         }
         sign = getSign(signQuery);
         //launch URL
-        const launchURL = `${environment}/api/sessions/seamless/rest/v1?exit=${encodeURI(args.exit)}&profile=nofullscreen.xml&nodeId=${nodeid}&token=${token}&sign=${sign}`;
+        const launchURL = `${environment}/api/sessions/seamless/rest/v1?exit=${encodeURI(args.exit)}&profile=${signQuery.profile}&nodeId=${nodeid}&token=${token}&sign=${sign}`;
            
         const params = {
             sessionId: token,
@@ -43,7 +43,7 @@ module.exports = {
             node: args.node
         };
                 
-        mongodbHandle.save('sessions', params);
+        db.save('sessions', params);
         return launchURL;
     },
     demo: (args) => {

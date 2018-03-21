@@ -1,6 +1,11 @@
 const sha1 = require('sha1');
 const uuid = require('uuid');
+const db = require('./dbHandler');
 
+// Load Model
+const Session = require('../../models/Session');
+const Player = require('../../models/Player');
+const Transaction = require('../../models/Transaction');
 // Load keys
 const keys = require('../config/keys');
 
@@ -24,26 +29,19 @@ module.exports = {
     validQuery: (method, query) => {
         const sign = module.exports.getSign(query);
         let gQuery;
-        console.log('qQuery', query);
         switch (method) {
             case '/session':
-                gQuery = query.token && query.sign===sign;
-                break;
-
-            case '/balance':
+            case '/balance':            
                 gQuery = query.token && query.sign===sign;
                 break;
 
             case '/bet':
+            case '/win':            
                 gQuery = query.token && query.amount && query.gameId && query.id && query.date && query.sign===sign;
                 break;
 
             case '/refund':
                 gQuery = query.token && query.amount && query.gameId && query.id && query.date && query.betTransactionId && query.sign===sign;
-                break;
-            
-            case '/win':
-                gQuery = query.token && query.amount && query.gameId && query.id && query.date  && query.sign===sign;
                 break;
             
             default:
@@ -53,7 +51,7 @@ module.exports = {
         if(gQuery){
             return true;
         } else {
-            console.log('sign',sign);
+            console.log('correct sign: ', sign)
             return false;
         }
     },
@@ -72,5 +70,43 @@ module.exports = {
         queryValues += salt;
         const sign = sha1(queryValues);
         return sign;
+    },
+    getSessionAndPlayer: (res, params) => {
+        return new Promise((resolve, reject) => {
+            let globalSession;
+            db.findOne('sessions', params.token)
+                .then(session => {
+                    if(session.active === false) resolve(apiErr(res, 'TOKEN_EXPIRED'));
+                    globalSession = session;
+                    return db.findOne('players', session.playerId);
+                })
+                .then(player => {
+                    if(player) {
+                        const result = {
+                            session: globalSession,
+                            player: player
+                        }
+                        resolve(result)
+                }})
+                .catch(err => {
+                    resolve(apiErr(res, 'INTERNAL_ERROR'));
+                });
+        })
+        
+    },
+    getTransaction: (res, params) => {
+        return new Promise((resolve, reject) => {
+            db.findOne('transactions', params.id)
+                .then(transaction => {
+                    if(transaction){
+                        const result = transaction; 
+                        resolve(result)
+                    } else {
+                        resolve(false)  
+                    }
+                })
+                .catch(err => {return apiErr(res, 'INTERNAL_ERRO')});
+        })
+        
     }
 }
