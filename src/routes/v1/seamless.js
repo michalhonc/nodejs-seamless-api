@@ -162,7 +162,7 @@ module.exports = {
     win: (req, res) => {
         const params = req.body;
     
-        if(!validQuery(req.path, params)) return apiErr(res, 'ACCESS_DENIED');
+        //if(!validQuery(req.path, params)) return apiErr(res, 'ACCESS_DENIED');
 
         Promise.all([getSessionAndPlayer(res, params), getTransaction(res, params)])
             .then(array => {
