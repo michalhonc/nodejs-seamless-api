@@ -13,8 +13,8 @@ module.exports = {
     generateUUID: () => {
         return uuid().replace(/-/g, '').toUpperCase();
     },
-    getBalance: (player, sessionCurrency) => {
-        return player.wallet.find( wallet => wallet.currency === sessionCurrency).balance;
+    getBalance: (player) => {
+        return player.wallet.find( wallet => wallet.currency === 'EUR').balance;
     },
     convertCredits: {
         toInternal: function(amount) {

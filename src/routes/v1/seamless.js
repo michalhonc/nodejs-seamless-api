@@ -39,7 +39,7 @@ module.exports = {
 
         getSessionAndPlayer(res, params)
             .then(result => {
-                const balance = getBalance(result.player, result.session.currency)
+                const balance = getBalance(result.player)
                 
                 result = {
                     balance: convertCredits.toEndorphina(balance)

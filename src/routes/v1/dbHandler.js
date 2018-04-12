@@ -39,8 +39,7 @@ const db = {
         switch (collection) {
             case 'balance':
                 Player.findOneAndUpdate({
-                    playerId: params.session.playerId,
-                    'wallet.currency': params.session.currency 
+                    playerId: params.session.playerId 
                     },
                     {'wallet.balance': params.balance},
                     {new: true},
