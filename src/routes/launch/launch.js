@@ -23,7 +23,7 @@ router.get('/real', (req, res) => {
     }
 
     launchURL = gameLaunch.real(params);    
-    res.send(launchURL);
+    res.redirect(launchURL);
 });
 
 router.get('/demo', (req, res) => {
