@@ -44,7 +44,7 @@ module.exports = {
         };
                 
         db.save('sessions', params);
-        return launchURL;
+         res.redirect(launchURL);
     },
     demo: (args) => {
 

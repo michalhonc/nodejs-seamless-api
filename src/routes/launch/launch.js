@@ -18,7 +18,7 @@ router.get('/real', (req, res) => {
         node: 'common',
         playerid: 'admin',
         gameid: req.query.game,
-        currency: 'EUR',
+        currency: req.query.currency,
         exit: 'https://example.com'
     }
 
